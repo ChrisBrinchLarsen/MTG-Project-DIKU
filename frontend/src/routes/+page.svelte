@@ -1,3 +1,1 @@
-<h1>Welcome to SvelteKit</h1>
-
-<p>Hello lads</p>
+<p>This is where the content goes.</p>
