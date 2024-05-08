@@ -52,6 +52,8 @@ with open("data/rawCards.json", 'r', encoding='cp437') as file:
         layout_      = getTrait("layout"          ,line)
         artist_      = getTrait("artist"          ,line)
         name_        = getTrait("name"            ,line)
+        
+        # Types
         typeLine     = getTrait("type_line"       ,line).encode().decode("unicode-escape").replace(u"Î\x93Ã\x87Ã¶", "-").split(" - ")
         subTypes_ = []
         if len(typeLine) != 1:
@@ -84,6 +86,12 @@ with open("data/rawCards.json", 'r', encoding='cp437') as file:
             else:
                 superTypes_.append(type)
 
+        # Keywords
+        keywords_ = []
+        keywordsMatch = re.search(r'"keywords":(\[.*?\]),', line)
+        if keywordsMatch != None:
+            keywords_ = eval(keywordsMatch.group(1))
+
 
         # Combined Mana
         combinedMana_         = 0.0
@@ -104,6 +112,7 @@ with open("data/rawCards.json", 'r', encoding='cp437') as file:
             superTypes   = superTypes_,
             types        = types_,
             subTypes     = subTypes_,
+            keywords    = keywords_,
             exactMana    = exactMana_,
             combinedMana = combinedMana_,
             oracleText   = oracleText_,
@@ -136,10 +145,3 @@ for x in range(len(sortedByNameDate)):
         if currentName == nextName: continue
         else: noDupesCards.append(sortedByNameDate[x])
     else: noDupesCards.append(sortedByNameDate[x])
-
-print(len(noDupesCards))
-for i in range(5):
-    print(f"Super: {noDupesCards[i]["superTypes"]}")
-    print(f"Type : {noDupesCards[i]["types"]}")
-    print(f"Sub  : {noDupesCards[i]["subTypes"]}")
-    print()
