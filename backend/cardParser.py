@@ -96,6 +96,26 @@ def parseCards(file:str):
             if keywordsMatch != None:
                 keywords_ = eval(keywordsMatch.group(1))
 
+            # Color identities
+            colors = []
+            w_ = g_ = u_ = b_ = r_ = 0
+            colorsMatch = re.search(r'"colors":(\[.*?\]),', line)
+            if colorsMatch != None:
+                colors = eval(keywordsMatch.group(1))
+            for color in colors:
+                match color:
+                    case 'W':
+                        w_ = 1
+                    case 'G':
+                        g_ = 1
+                    case 'U':
+                        u_ = 1
+                    case 'B':
+                        b_ = 1
+                    case 'R':
+                        r_ = 1
+
+                
 
             # Combined Mana
             combinedMana_         = 0.0
@@ -132,6 +152,11 @@ def parseCards(file:str):
                 rarity       = rarity_,
                 layout       = layout_,
                 artist       = artist_,
+                W            = w_,
+                G            = g_,
+                U            = u_,
+                B            = b_,
+                R            = r_,
             )
             isBadCard = checkMissingData(cardAttr)
             if isBadCard: continue  # This could be optimized so we early exit as soon as we receive a bad trait
