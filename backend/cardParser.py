@@ -17,7 +17,7 @@ def checkMissingData(card:dict) -> bool:
                       ,"releaseDate"
                       ,"collectorID"
                       ,"imageSmall"
-                      ,"imageMedium"
+                      ,"imageNormal"
                       ,"imageLarge"
                       ,"setAcro"
                       ,"combinedMana"
@@ -31,6 +31,8 @@ def checkMissingData(card:dict) -> bool:
     for trait in importantTraits:
         if card[trait] == "":
             return True
+    badLayouts = {"split", "transform", "modal_dfc", "double_faced_token", "art_series", "adventure"}
+    if card["layout"] in badLayouts: return True
     return False
 
 def parseCards(file:str):
@@ -41,13 +43,15 @@ def parseCards(file:str):
             if line == '[' or line == ']': continue # Skip first and last line
 
             # Misc Traits
-            collectorID_ = getTrait("collector_number",line) # We can't make these ints due to "★"
+            collectorID_ = getTrait("collector_number",line) # We can't make these ints due to "★" and various exceptions
             flavorText_  = getTrait("flavor_text"     ,line).replace("\\", "") # Cleaning up strings
             oracleText_  = getTrait("oracle_text"     ,line)        
             #exactMana_   = getTrait("mana_cost"       ,line)
             priceEUR_    = getTrait("eur"             ,line)
+            if priceEUR_ == "":
+                priceEUR_ = 0.0
             imageSmall_  = getTrait("small"           ,line)
-            imageNormal_ = getTrait("normal"           ,line)
+            imageNormal_ = getTrait("normal"          ,line)
             imageLarge_  = getTrait("large"           ,line)
             setAcro_     = getTrait("set"             ,line)
             setName_     = getTrait("set_name"        ,line)
@@ -56,6 +60,7 @@ def parseCards(file:str):
             layout_      = getTrait("layout"          ,line)
             artist_      = getTrait("artist"          ,line)
             name_        = getTrait("name"            ,line)
+            layout_      = getTrait("layout"          ,line)
             
             # Types
             typeLine     = getTrait("type_line"       ,line).encode().decode("unicode-escape").replace(u"Î\x93Ã\x87Ã¶", "-").split(" - ")
@@ -97,28 +102,15 @@ def parseCards(file:str):
                 keywords_ = eval(keywordsMatch.group(1))
 
             # Color identities
-            colors = []
-            w_ = g_ = u_ = b_ = r_ = 0
+            colors_ = []
             colorsMatch = re.search(r'"colors":(\[.*?\]),', line)
             if colorsMatch != None:
-                colors = eval(keywordsMatch.group(1))
-            for color in colors:
-                match color:
-                    case 'W':
-                        w_ = 1
-                    case 'G':
-                        g_ = 1
-                    case 'U':
-                        u_ = 1
-                    case 'B':
-                        b_ = 1
-                    case 'R':
-                        r_ = 1
+                colors_ = eval(colorsMatch.group(1))
 
                 
 
             # Combined Mana
-            combinedMana_         = 0.0
+            combinedMana_         = 0
             combinedManaMatch     = re.search(r'"cmc":(\d+\.\d?),', line)
             if combinedManaMatch != None:
                 combinedMana_     = float(combinedManaMatch.group(1))
@@ -152,11 +144,7 @@ def parseCards(file:str):
                 rarity       = rarity_,
                 layout       = layout_,
                 artist       = artist_,
-                W            = w_,
-                G            = g_,
-                U            = u_,
-                B            = b_,
-                R            = r_,
+                colors       = colors_,
             )
             isBadCard = checkMissingData(cardAttr)
             if isBadCard: continue  # This could be optimized so we early exit as soon as we receive a bad trait
