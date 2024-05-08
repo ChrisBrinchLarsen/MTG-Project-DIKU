@@ -13,6 +13,19 @@ To run the API, first make sure you have `python` installed. We are using Python
 python -v
 ```
 
+Also make sure you have Pipenv installed and the environment activated:
+
+```bash
+# install pipenv
+pip install pipenv
+
+# sync the dependencies
+pipenv sync
+
+# activate the environment
+pipenv shell
+```
+
 ### Developing
 
 To start the api, run:
