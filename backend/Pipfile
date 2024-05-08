@@ -6,9 +6,10 @@ name = "pypi"
 [packages]
 flask = "*"
 flask-cors = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.11"
-python_full_version = "3.11.7"
+python_version = "3.12"
+python_full_version = "3.12.3"

@@ -6,24 +6,57 @@ Backend Flask project for MTG project.
 
 ### Prerequisites
 
-To run the API, first make sure you have `python` installed. We are using Python 3.11 and a virtual environment with `pipenv`.
+To run the API, first make sure you have `python` installed. We are using Python 3.12 and a virtual environment with `pipenv`. You may have to downgrade or upgrade.
 
 ```bash
 # check python version
-python -v
+python --version
 ```
 
-Also make sure you have Pipenv installed and the environment activated:
+Also make sure you have Pipenv and Flask installed and the environment activated:
 
 ```bash
 # install pipenv
 pip install pipenv
+
+# install Flask
+pip install Flask
 
 # sync the dependencies
 pipenv sync
 
 # activate the environment
 pipenv shell
+```
+
+Before starting the backend, you need to initialize the database. Make sure you have Postgres installed locally and can run `psql`.
+
+First, go into a Postgres session:
+
+```bash
+psql
+```
+
+Initialize a database with the name `dis_magic`, a user with the name `admin` and a password called `password`:
+
+```bash
+postgres=# CREATE DATABASE dis_magic;
+postgres=# CREATE USER admin WITH PASSWORD 'password';
+postgres=# GRANT ALL PRIVILEGES ON DATABASE dis_magic TO admin;
+postgres=# \c dis_magic postgres
+postgres=# GRANT ALL ON SCHEMA public TO admin;
+```
+
+Verify the database was initialized with:
+
+```bash
+postgres=# \l
+```
+
+Next, you need to run the initialization of the DB that also seeds the database with the data we are using.
+
+```bash
+python init_db.py
 ```
 
 ### Developing
