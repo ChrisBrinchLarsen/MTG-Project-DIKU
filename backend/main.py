@@ -52,6 +52,38 @@ with open("data/rawCards.json", 'r', encoding='cp437') as file:
         layout_      = getTrait("layout"          ,line)
         artist_      = getTrait("artist"          ,line)
         name_        = getTrait("name"            ,line)
+        typeLine     = getTrait("type_line"       ,line).encode().decode("unicode-escape").replace(u"Î\x93Ã\x87Ã¶", "-").split(" - ")
+        subTypes_ = []
+        if len(typeLine) != 1:
+            subTypes_ = typeLine[1].split(" ")
+        leftTypes = typeLine[0].split(" ")
+        validTypes = {"Creature"
+                     ,"Sorcery"
+                     ,"Summon"
+                     ,"Interrupt"
+                     ,"Instant"
+                     ,"Artifact"
+                     ,"Battle"
+                     ,"Conspiracy"
+                     ,"Emblem"
+                     ,"Enchantment"
+                     ,"Hero"
+                     ,"Land"
+                     ,"Phenomenon"
+                     ,"Plane"
+                     ,"Planeswalker"
+                     ,"Scheme"
+                     ,"Tribal"
+                     ,"Vanguard"
+                     }
+        types_ = []
+        superTypes_ = []
+        for type in leftTypes:
+            if type in validTypes:
+                types_.append(type)
+            else:
+                superTypes_.append(type)
+
 
         # Combined Mana
         combinedMana_         = 0.0
@@ -66,13 +98,12 @@ with open("data/rawCards.json", 'r', encoding='cp437') as file:
             (year, month, day) = (int(dateMatch.group(1)), int(dateMatch.group(2)), int(dateMatch.group(3)))
             releaseDate_       = dt.datetime(year, month, day)
         
-        # Types
-        superType_         = ""
-        subType_           = ""
-
         cardAttr = dict(
             name         = name_,
             releaseDate  = releaseDate_,
+            superTypes   = superTypes_,
+            types        = types_,
+            subTypes     = subTypes_,
             exactMana    = exactMana_,
             combinedMana = combinedMana_,
             oracleText   = oracleText_,
@@ -106,3 +137,9 @@ for x in range(len(sortedByNameDate)):
         else: noDupesCards.append(sortedByNameDate[x])
     else: noDupesCards.append(sortedByNameDate[x])
 
+print(len(noDupesCards))
+for i in range(5):
+    print(f"Super: {noDupesCards[i]["superTypes"]}")
+    print(f"Type : {noDupesCards[i]["types"]}")
+    print(f"Sub  : {noDupesCards[i]["subTypes"]}")
+    print()
