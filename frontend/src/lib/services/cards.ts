@@ -1,7 +1,7 @@
 import { env } from '$env/dynamic/public'
 
-export async function getEmployees() {
-  const response = await fetch(`${env.PUBLIC_API_URL}/employees`, {
+export async function getCards() {
+  const response = await fetch(`${env.PUBLIC_API_URL}/random-cards`, {
     method: 'GET',
     mode: 'cors'
   })

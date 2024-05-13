@@ -5,6 +5,6 @@
 
 <Navbar />
 
-<main class="container mx-auto px-4">
+<main class="container mx-auto max-w-4xl px-4">
   <slot />
 </main>
