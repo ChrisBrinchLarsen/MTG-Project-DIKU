@@ -19,7 +19,7 @@ Also make sure you have Pipenv and Flask installed and the environment activated
 # install pipenv
 pip install pipenv
 
-# install Flask
+# install Flask (note the uppercase F)
 pip install Flask
 
 # sync the dependencies
@@ -53,7 +53,7 @@ Verify the database was initialized with:
 postgres=# \l
 ```
 
-Next, you need to run the initialization of the DB that also seeds the database with the data we are using.
+Next, you need to run the initialization of the DB that also seeds the database with the data we are using. Before doing so, download the sample data from [this link](https://data.scryfall.io/default-cards/default-cards-20240513090527.json), name it `rawCards.json` and put it inside `data/rawCards.json`.
 
 ```bash
 python init_db.py
@@ -67,4 +67,4 @@ To start the api, run:
 flask run
 ```
 
-This should start it on [localhost:5000](http://localhost:5000). If not, try installing flask.
+This should start the server on [localhost:5000](http://localhost:5000).
