@@ -53,7 +53,7 @@ Verify the database was initialized with:
 postgres=# \l
 ```
 
-Next, you need to run the initialization of the DB that also seeds the database with the data we are using. Before doing so, download the sample data from [this link](https://data.scryfall.io/default-cards/default-cards-20240513090527.json), name it `rawCards.json` and put it inside `data/rawCards.json`.
+Next, you need to run the initialization of the DB that also seeds the database with the data we are using. Before doing so, download the sample data from [this link](https://data.scryfall.io/default-cards/default-cards-20240513090527.json), name it `rawCards.json` and put it inside `data/rawCards.json`. Then run:
 
 ```bash
 python init_db.py
@@ -64,7 +64,7 @@ python init_db.py
 To start the api, run:
 
 ```bash
-flask run
+flask run --debug
 ```
 
 This should start the server on [localhost:5000](http://localhost:5000).
