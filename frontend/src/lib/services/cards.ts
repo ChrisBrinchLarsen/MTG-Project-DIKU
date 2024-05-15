@@ -11,7 +11,7 @@ export async function getCards() {
   return body
 }
 
-export async function guessCard(bodyMessage: object) {
+export async function guessCard(bodyMessage: { id: number }) {
   const response = await fetch(`${env.PUBLIC_API_URL}/guess`, {
     method: 'POST',
     mode: 'cors',

@@ -5,9 +5,12 @@
 
   let data: Card[] | null = null
 
+  const handleCardClick = async (id: number) => {
+    await guessCard({ id })
+  }
+
   onMount(async () => {
     data = await getCards()
-    await guessCard({ name: 'heyo' })
   })
 </script>
 
@@ -15,7 +18,9 @@
   <ul class="grid grid-cols-5 gap-4">
     {#each data as card (card.cardid)}
       <li class="flex justify-center">
-        <img src={card.imagesmall} alt={card.name} />
+        <button on:click={() => handleCardClick(card.cardid)}>
+          <img src={card.imagesmall} alt={card.name} />
+        </button>
       </li>
     {/each}
   </ul>
