@@ -1,5 +1,4 @@
 import { env } from '$env/dynamic/public'
-import { json } from '@sveltejs/kit'
 
 export async function getCards() {
   const response = await fetch(`${env.PUBLIC_API_URL}/random-cards`, {
@@ -12,7 +11,7 @@ export async function getCards() {
   return body
 }
 
-export async function guess_card(bodyMessage: object) {
+export async function guessCard(bodyMessage: object) {
   const response = await fetch(`${env.PUBLIC_API_URL}/guess`, {
     method: 'POST',
     mode: 'cors',
