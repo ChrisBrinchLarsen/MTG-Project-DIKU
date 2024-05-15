@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { replaceState } from '$app/navigation'
+  import { goto } from '$app/navigation'
 
   let name = ''
 
   const handleSubmit = () => {
     // Register user and game here. We will need to use localStorage.
 
-    replaceState('/game', { state: null })
+    // Normally, we shouldn't need to setTimeout but there is a bug
+    setTimeout(() => goto('/game'), 0)
   }
 </script>
 
