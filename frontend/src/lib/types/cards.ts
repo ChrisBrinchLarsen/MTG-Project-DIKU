@@ -14,3 +14,5 @@ export type Card = {
   rarity: string
   artist: string
 }
+
+export type PartialCard = Pick<Card, 'cardid' | 'name' | 'imagesmall'>

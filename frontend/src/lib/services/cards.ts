@@ -1,7 +1,8 @@
 import { env } from '$env/dynamic/public'
+import type { PartialCard } from '$lib/types/cards'
 
-export async function getCards() {
-  const response = await fetch(`${env.PUBLIC_API_URL}/random-cards`, {
+export async function initGame(): Promise<{ correctCard: PartialCard; cards: PartialCard[] }> {
+  const response = await fetch(`${env.PUBLIC_API_URL}/init-game`, {
     method: 'GET',
     mode: 'cors'
   })
@@ -11,7 +12,11 @@ export async function getCards() {
   return body
 }
 
-export async function guessCard(bodyMessage: { id: number }) {
+export async function guessCard(bodyMessage: {
+  guessedCardId: number
+  correctCardId: number
+  cardIds: number[]
+}): Promise<{ cards: PartialCard[] }> {
   const response = await fetch(`${env.PUBLIC_API_URL}/guess`, {
     method: 'POST',
     mode: 'cors',

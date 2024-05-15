@@ -1,22 +1,38 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import type { Card } from '$lib/types/cards'
-  import { getCards, guessCard } from '$lib/services/cards'
+  import type { PartialCard } from '$lib/types/cards'
+  import { initGame, guessCard } from '$lib/services/cards'
 
-  let data: Card[] | null = null
+  let cards: PartialCard[] | null = null
+  let correctCard: PartialCard | null = null
 
   const handleCardClick = async (id: number) => {
-    await guessCard({ id })
+    if (!cards || !correctCard) {
+      return
+    }
+
+    const data = await guessCard({
+      guessedCardId: id,
+      correctCardId: correctCard.cardid,
+      cardIds: cards.map((card) => card.cardid)
+    })
+
+    cards = data.cards
   }
 
   onMount(async () => {
-    data = await getCards()
+    const data = await initGame()
+    cards = data.cards
+    correctCard = data.correctCard
   })
+
+  $: sortedCards =
+    cards && correctCard ? [...cards, correctCard].sort((a, b) => a.cardid - b.cardid) : []
 </script>
 
-{#if data}
+{#if cards && correctCard}
   <ul class="grid grid-cols-5 gap-4">
-    {#each data as card (card.cardid)}
+    {#each sortedCards as card (card.cardid)}
       <li class="flex justify-center">
         <button on:click={() => handleCardClick(card.cardid)}>
           <img src={card.imagesmall} alt={card.name} />
@@ -25,5 +41,5 @@
     {/each}
   </ul>
 {:else}
-  Fetching cards...
+  Initializing game...
 {/if}
