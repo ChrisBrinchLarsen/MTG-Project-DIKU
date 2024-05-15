@@ -2,11 +2,13 @@
   import { onMount } from 'svelte'
   import type { Card } from '$lib/types/cards'
   import { getCards } from '$lib/services/cards'
+  import { guess_card } from '$lib/services/cards'
 
   let data: Card[] | null = null
 
   onMount(async () => {
     data = await getCards()
+    await guess_card({name: "heyo"})
   })
 </script>
 

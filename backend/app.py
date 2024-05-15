@@ -1,6 +1,6 @@
 import psycopg2.extras
 import json
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from db import get_db
 
@@ -21,6 +21,15 @@ def get_cards():
 
     return json.dumps(cards, default=str)
 
+@app.route('/guess', methods=['POST'])
+def guess_card(): 
+    conn = get_db()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    print(request.get_json())
+
+    cur.close()
+    conn.close()
+    return "success"
 
 if __name__ == '__main__':
     app.run(port=5000)
