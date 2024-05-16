@@ -1,19 +1,19 @@
 import re
 import datetime as dt
 
-def matchTrait(trait: str, source: str):
+def match_trait(trait: str, source: str):
     return re.search(r'"'+ trait + r'":"(.*?)",', source)
 
-def getTrait(trait: str, source: str) -> str:
-    traitMatch = matchTrait(trait, source)
-    if traitMatch != None:
-        return traitMatch.group(1)
+def get_trait(trait: str, source: str) -> str:
+    trait_match = match_trait(trait, source)
+    if trait_match != None:
+        return trait_match.group(1)
     else:
         return ""
 
 # Strips away 4119 broken entries
-def checkMissingData(card:dict) -> bool:
-    importantTraits = ["name"
+def check_missing_data(card:dict) -> bool:
+    important_traits = ["name"
                       ,"releaseDate"
                       ,"collectorID"
                       ,"imageSmall"
@@ -28,14 +28,16 @@ def checkMissingData(card:dict) -> bool:
                       ,"layout"
                       ,"artist"
                       ]
-    for trait in importantTraits:
+    for trait in important_traits:
         if card[trait] == "":
             return True
-    badLayouts = {"split", "transform", "modal_dfc", "double_faced_token", "art_series", "adventure"}
-    if card["layout"] in badLayouts: return True
+    bad_layouts = {"split", "transform", "modal_dfc", "double_faced_token", "art_series", "adventure"}
+    if card["layout"] in bad_layouts: return True
     return False
 
-def parseCards(file:str):
+def parse_cards(file:str):
+    print("\nParsing cards. This might take a moment...")
+
     cards = []
     with open("data/"+file, 'r', encoding='cp437') as file:
         lines = file.read().split('\n')
@@ -43,31 +45,31 @@ def parseCards(file:str):
             if line == '[' or line == ']': continue # Skip first and last line
 
             # Misc Traits
-            collectorID_ = getTrait("collector_number",line) # We can't make these ints due to "★" and various exceptions
-            flavorText_  = getTrait("flavor_text"     ,line).replace("\\", "") # Cleaning up strings
-            oracleText_  = getTrait("oracle_text"     ,line)        
-            #exactMana_   = getTrait("mana_cost"       ,line)
-            priceEUR_    = getTrait("eur"             ,line)
+            collectorID_ = get_trait("collector_number",line) # We can't make these ints due to "★" and various exceptions
+            flavorText_  = get_trait("flavor_text"     ,line).replace("\\", "") # Cleaning up strings
+            oracleText_  = get_trait("oracle_text"     ,line)        
+            #exactMana_   = get_trait("mana_cost"       ,line)
+            priceEUR_    = get_trait("eur"             ,line)
             if priceEUR_ == "":
                 priceEUR_ = 0.0
-            imageSmall_  = getTrait("small"           ,line)
-            imageNormal_ = getTrait("normal"          ,line)
-            imageLarge_  = getTrait("large"           ,line)
-            setAcro_     = getTrait("set"             ,line)
-            setName_     = getTrait("set_name"        ,line)
-            setType_     = getTrait("set_type"        ,line)
-            rarity_      = getTrait("rarity"          ,line)
-            layout_      = getTrait("layout"          ,line)
-            artist_      = getTrait("artist"          ,line)
-            name_        = getTrait("name"            ,line)
-            layout_      = getTrait("layout"          ,line)
+            imageSmall_  = get_trait("small"           ,line)
+            imageNormal_ = get_trait("normal"          ,line)
+            imageLarge_  = get_trait("large"           ,line)
+            setAcro_     = get_trait("set"             ,line)
+            setName_     = get_trait("set_name"        ,line)
+            setType_     = get_trait("set_type"        ,line)
+            rarity_      = get_trait("rarity"          ,line)
+            layout_      = get_trait("layout"          ,line)
+            artist_      = get_trait("artist"          ,line)
+            name_        = get_trait("name"            ,line)
+            layout_      = get_trait("layout"          ,line)
             
             # Types
-            typeLine     = getTrait("type_line"       ,line).encode().decode("unicode-escape").replace(u"Î\x93Ã\x87Ã¶", "-").split(" - ")
+            typeLine     = get_trait("type_line"       ,line).encode().decode("unicode-escape").replace(u"Î\x93Ã\x87Ã¶", "-").split(" - ")
             subTypes_ = []
             if len(typeLine) != 1:
                 subTypes_ = typeLine[1].split(" ")
-            leftTypes = typeLine[0].split(" ")
+            left_types = typeLine[0].split(" ")
             validTypes = {"Creature"
                         ,"Sorcery"
                         ,"Summon"
@@ -89,7 +91,7 @@ def parseCards(file:str):
                         }
             types_ = []
             superTypes_ = []
-            for type in leftTypes:
+            for type in left_types:
                 if type in validTypes:
                     types_.append(type)
                 else:
@@ -97,23 +99,23 @@ def parseCards(file:str):
 
             # Keywords
             keywords_ = []
-            keywordsMatch = re.search(r'"keywords":(\[.*?\]),', line)
-            if keywordsMatch != None:
-                keywords_ = eval(keywordsMatch.group(1))
+            keywords_match = re.search(r'"keywords":(\[.*?\]),', line)
+            if keywords_match != None:
+                keywords_ = eval(keywords_match.group(1))
 
             # Color identities
             colors_ = []
-            colorsMatch = re.search(r'"colors":(\[.*?\]),', line)
-            if colorsMatch != None:
-                colors_ = eval(colorsMatch.group(1))
+            colors_match = re.search(r'"colors":(\[.*?\]),', line)
+            if colors_match != None:
+                colors_ = eval(colors_match.group(1))
 
                 
 
             # Combined Mana
             combinedMana_         = 0
-            combinedManaMatch     = re.search(r'"cmc":(\d+\.\d?),', line)
-            if combinedManaMatch != None:
-                combinedMana_     = float(combinedManaMatch.group(1))
+            combined_mana_match     = re.search(r'"cmc":(\d+\.\d?),', line)
+            if combined_mana_match != None:
+                combinedMana_     = float(combined_mana_match.group(1))
 
             # Release Date
             releaseDate_           = dt.datetime.min # Default value ?
@@ -122,7 +124,7 @@ def parseCards(file:str):
                 (year, month, day) = (int(dateMatch.group(1)), int(dateMatch.group(2)), int(dateMatch.group(3)))
                 releaseDate_       = dt.datetime(year, month, day)
             
-            cardAttr = dict(
+            card_attr = dict(
                 name         = name_,
                 releaseDate  = releaseDate_,
                 superTypes   = superTypes_,
@@ -146,22 +148,25 @@ def parseCards(file:str):
                 artist       = artist_,
                 colors       = colors_,
             )
-            isBadCard = checkMissingData(cardAttr)
-            if isBadCard: continue  # This could be optimized so we early exit as soon as we receive a bad trait
+            is_nad_card = check_missing_data(card_attr)
+            if is_nad_card: continue  # This could be optimized so we early exit as soon as we receive a bad trait
 
-            cards.append(cardAttr)
+            cards.append(card_attr)
 
     # Sorting by date and then name to prepare for duplicate removal
-    sortedByDate = sorted(cards, key=lambda x: x["releaseDate"])
-    sortedByNameDate = sorted(cards, key=lambda x: x["name"])
+    sorted_by_date = sorted(cards, key=lambda x: x["releaseDate"])
+    sorted_by_name_date = sorted(cards, key=lambda x: x["name"])
 
     # Removing 61571 duplicates, keeping only the original prints
-    noDupesCards = []
-    for x in range(len(sortedByNameDate)):
-        currentName = sortedByNameDate[x]["name"]
-        if (x != len(sortedByNameDate)-1):
-            nextName = sortedByNameDate[x+1]["name"]
-            if currentName == nextName: continue
-            else: noDupesCards.append(sortedByNameDate[x])
-        else: noDupesCards.append(sortedByNameDate[x])
-    return noDupesCards
+    no_dupes_cards = []
+    for x in range(len(sorted_by_name_date)):
+        current_name = sorted_by_name_date[x]["name"]
+        if (x != len(sorted_by_name_date)-1):
+            next_name = sorted_by_name_date[x+1]["name"]
+            if current_name == next_name: continue
+            else: no_dupes_cards.append(sorted_by_name_date[x])
+        else: no_dupes_cards.append(sorted_by_name_date[x])
+
+    print("Finished parsing...")
+
+    return no_dupes_cards

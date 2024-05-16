@@ -1,6 +1,6 @@
 import psycopg2
 import db
-from cardParser import parseCards
+from card_parser import parse_cards
 
 conn = psycopg2.connect(
     host=db.DB_HOST,
@@ -35,7 +35,7 @@ color varchar (1) DEFAULT 0,
 PRIMARY KEY(cardID, color)
 );
 """
-)
+            )
 
 # Keyword relation
 cur.execute('DROP TABLE IF EXISTS KeywordCards;')
@@ -46,7 +46,7 @@ keyword varchar (64),
 PRIMARY KEY(cardID, keyword)
 );
 """
-)
+            )
 
 # Type relation
 cur.execute('DROP TABLE IF EXISTS TypeCards;')
@@ -57,7 +57,7 @@ type varchar (32),
 PRIMARY KEY(cardID, type)
 );
 """
-)
+            )
 
 # Super type relation
 cur.execute('DROP TABLE IF EXISTS SuperTypeCards;')
@@ -68,7 +68,7 @@ superType varchar (32),
 PRIMARY KEY(cardID, superType)
 );
 """
-)
+            )
 
 # SUb type relation
 cur.execute('DROP TABLE IF EXISTS SubTypeCards;')
@@ -79,33 +79,24 @@ subType varchar (32),
 PRIMARY KEY(cardID, subType)
 );
 """
-)
+            )
 
 # Card inserter
+
+
 def insertCard(card, id):
     insertQuery = """
     INSERT INTO Cards (cardID, name, releaseDate, cmc, oracle, collectorID, flavorText, priceEUR, imageSmall, imageNormal, imageLarge, setAcro, rarity, artist) 
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
-    
-    cardInfo = (id
-               ,card["name"]
-               ,card["releaseDate"]
-               ,card["combinedMana"]
-               ,card["oracleText"]
-               ,card["collectorID"]
-               ,card["flavorText"]
-               ,card["priceEUR"]
-               ,card["imageSmall"]
-               ,card["imageNormal"]
-               ,card["imageLarge"]
-               ,card["setAcro"]
-               ,card["rarity"]
-               ,card["artist"]
-               )
+
+    cardInfo = (id, card["name"], card["releaseDate"], card["combinedMana"], card["oracleText"], card["collectorID"], card["flavorText"], card["priceEUR"], card["imageSmall"], card["imageNormal"], card["imageLarge"], card["setAcro"], card["rarity"], card["artist"]
+                )
     cur.execute(insertQuery, cardInfo)
 
 # Color-card inserter
+
+
 def insertColorCard(card, id):
     insertQuery = """
     INSERT INTO ColorCards (cardID, color)
@@ -115,6 +106,8 @@ def insertColorCard(card, id):
         cur.execute(insertQuery, (id, color))
 
 # Keyword-card inserter
+
+
 def insertKeywordCard(card, id):
     insertQuery = """
     INSERT INTO KeywordCards (cardID, keyword)
@@ -124,6 +117,8 @@ def insertKeywordCard(card, id):
         cur.execute(insertQuery, (id, keyword))
 
 # Type-card inserter
+
+
 def insertTypeCard(card, id):
     insertQuery = """
     INSERT INTO TypeCards (cardID, type)
@@ -133,6 +128,8 @@ def insertTypeCard(card, id):
         cur.execute(insertQuery, (id, type))
 
 # Supertype-card inserter
+
+
 def insertSuperTypeCard(card, id):
     insertQuery = """
     INSERT INTO SuperTypeCards (cardID, superType)
@@ -142,6 +139,8 @@ def insertSuperTypeCard(card, id):
         cur.execute(insertQuery, (id, superType))
 
 # Subtype-card inserter
+
+
 def insertSubTypeCard(card, id):
     insertQuery = """
     INSERT INTO SubTypeCards (cardID, subType)
@@ -150,9 +149,11 @@ def insertSubTypeCard(card, id):
     for subType in card["subTypes"]:
         cur.execute(insertQuery, (id, subType))
 
+
 # Parse all cards from the dataset
-cards = parseCards("rawCards.json")
-id = 0 # Manually tracking individual card ID's for cross referencing tables
+cards = parse_cards("rawCards.json")
+print("Uploading cards to database...")
+id = 0  # Manually tracking individual card ID's for cross referencing tables
 for card in cards:
     id += 1
     insertCard(card, id)
@@ -166,3 +167,5 @@ conn.commit()
 
 cur.close()
 conn.close()
+
+print("Done!\n")
