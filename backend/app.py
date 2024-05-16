@@ -51,13 +51,25 @@ def guess_card():
 
     # Find the traits that the guessed and correct card share
     matching_traits = {key: value for (key, value) in
-                       correct_card.items() if guessed_card[key] == value and key in CATEGORIES_TO_COMPARE}
+                       guessed_card.items() if correct_card[key] == value and key in CATEGORIES_TO_COMPARE}
+
+    # Find the traits that the guessed and correct card do not share
+    non_matching_traits = {key: value for (key, value) in
+                           guessed_card.items() if correct_card[key] != value and key in CATEGORIES_TO_COMPARE}
 
     # Create the query for selecting the cards in the game with the shared traits
     base_query = "SELECT cardid, name, imagesmall FROM cards WHERE cardid = ANY(%s) "
-    traits_select = [f"AND {trait} = '{value}'" for trait,
-                     value in matching_traits.items()]
-    query = base_query + ' '.join(traits_select)
+
+    # Create the SQL conditionals for matching traits (positive filters)
+    positive_filter_conds = [f"AND {trait} = '{value}'" for trait,
+                             value in matching_traits.items()]
+    # Create the SQL conditionals for traits that do not match (negative filters)
+    negative_filter_conds = [f"AND NOT {trait} = '{value}'" for trait,
+                             value in non_matching_traits.items()]
+
+    # Concatenate the conditionals with the base query
+    query = base_query + \
+        ' '.join(positive_filter_conds) + ' '.join(negative_filter_conds)
 
     # Select the filtered cards
     filtered_cards = DB.execute(query, (card_ids,))
