@@ -13,11 +13,11 @@ def init_game():
 
     # Initialize a random card to be the correct card
     correct_card = DB.execute(
-        "SELECT cardid, name, imagesmall FROM cards ORDER BY RANDOM() LIMIT 1")[0]
+        "SELECT cardid, name, cmc, imagesmall FROM cards ORDER BY RANDOM() LIMIT 1")[0]
     correct_card_id = correct_card["cardid"]
 
     # Initialize additional random cards
-    cards = DB.execute("SELECT cardid, name, imagesmall FROM cards WHERE NOT cardid = %s ORDER BY RANDOM() LIMIT 19",
+    cards = DB.execute("SELECT cardid, name, cmc, imagesmall FROM cards WHERE NOT cardid = %s ORDER BY RANDOM() LIMIT 19",
                        (correct_card_id,))
 
     DB.close()
@@ -47,7 +47,7 @@ def guess_card():
     guessed_card = DB.execute(
         "SELECT * FROM cards WHERE cardid = %s", (guessed_card_id,))[0]
 
-    CATEGORIES_TO_COMPARE = ["rarity"]
+    CATEGORIES_TO_COMPARE = ["rarity", "cmc"]
 
     # Find the traits that the guessed and correct card share
     matching_traits = {key: value for (key, value) in
@@ -66,6 +66,12 @@ def guess_card():
     # Create the SQL conditionals for traits that do not match (negative filters)
     negative_filter_conds = [f"AND NOT {trait} = '{value}'" for trait,
                              value in non_matching_traits.items()]
+
+    # Uncomment the below lines for some debugging info
+    # print(
+    #     f"\nCorrect card rarity and CMC: {correct_card['rarity']}, {correct_card['cmc']}")
+    # print(f"Matching card traits: {matching_traits}")
+    # print(f"Non-matching card traits: {non_matching_traits}\n")
 
     # Concatenate the conditionals with the base query
     query = base_query + \

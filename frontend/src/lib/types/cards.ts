@@ -15,4 +15,4 @@ export type Card = {
   artist: string
 }
 
-export type PartialCard = Pick<Card, 'cardid' | 'name' | 'imagesmall'>
+export type PartialCard = Pick<Card, 'cardid' | 'name' | 'cmc' | 'imagesmall'>
