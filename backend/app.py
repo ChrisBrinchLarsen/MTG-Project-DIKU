@@ -40,12 +40,16 @@ def guess_card():
     card_ids = body["cardIds"]
 
     # Fetch the correct card from ID
-    correct_card = DB.execute(
-        "SELECT * FROM cards WHERE cardid = %s", (correct_card_id,))[0]
+    correct_cards = DB.execute(
+        "SELECT * FROM cards NATURAL JOIN typecards WHERE cardid = %s", (correct_card_id,))
+    correct_cards[0]["type"] = [card["type"] for card in correct_cards]
+    correct_card = correct_cards[0]
 
     # Fetch the guessed card from ID
-    guessed_card = DB.execute(
-        "SELECT * FROM cards WHERE cardid = %s", (guessed_card_id,))[0]
+    guessed_cards = DB.execute(
+        "SELECT * FROM cards NATURAL JOIN typecards WHERE cardid = %s", (guessed_card_id,))
+    guessed_cards[0]["type"] = [card["type"] for card in guessed_cards]
+    guessed_card = guessed_cards[0]
 
     CATEGORIES_TO_COMPARE = ["rarity", "cmc"]
 
@@ -58,7 +62,12 @@ def guess_card():
                            guessed_card.items() if correct_card[key] != value and key in CATEGORIES_TO_COMPARE}
 
     # Create the query for selecting the cards in the game with the shared traits
-    base_query = "SELECT cardid, name, imagesmall FROM cards WHERE cardid = ANY(%s) "
+    base_query = """
+        SELECT DISTINCT cardid 
+        FROM cards 
+        NATURAL JOIN typecards 
+        WHERE cardid = ANY(%s) 
+        """
 
     # Create the SQL conditionals for matching traits (positive filters)
     positive_filter_conds = [f"AND {trait} = '{value}'" for trait,
@@ -67,18 +76,28 @@ def guess_card():
     negative_filter_conds = [f"AND NOT {trait} = '{value}'" for trait,
                              value in non_matching_traits.items()]
 
-    # Uncomment the below lines for some debugging info
-    # print(
-    #     f"\nCorrect card rarity and CMC: {correct_card['rarity']}, {correct_card['cmc']}")
-    # print(f"Matching card traits: {matching_traits}")
-    # print(f"Non-matching card traits: {non_matching_traits}\n")
+    # Find the types the card shares
+    common_types = [card for card in correct_card["type"]
+                    if card in guessed_card["type"]]
+
+    # Calculate the SQL conditional for matching types
+    positive_filters_type = "AND type = ANY(%s)" if len(
+        common_types) > 0 else ""
 
     # Concatenate the conditionals with the base query
     query = base_query + \
-        ' '.join(positive_filter_conds) + ' '.join(negative_filter_conds)
+        ' '.join(positive_filter_conds) + \
+        ' '.join(negative_filter_conds) + positive_filters_type
+
+    # Construct the args
+    common_types_tuple = (common_types,) if len(common_types) > 0 else ()
+    args = (card_ids, *common_types_tuple)
+
+    # Use a query that removes duplicates from the original query
+    no_duplicate_query = f"SELECT cardid, name, imagesmall FROM ({query}) AS distinct_cards NATURAL JOIN cards"
 
     # Select the filtered cards
-    filtered_cards = DB.execute(query, (card_ids,))
+    filtered_cards = DB.execute(no_duplicate_query, args)
 
     DB.close()
 

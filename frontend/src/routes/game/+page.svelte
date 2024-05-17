@@ -3,10 +3,10 @@
   import type { PartialCard } from '$lib/types/cards'
   import { initGame, guessCard } from '$lib/services/cards'
 
-  let cards: PartialCard[] | null = null
-  let correctCard: PartialCard | null = null
+  let cards: PartialCard[] | undefined
+  let correctCard: PartialCard | undefined
 
-  const handleCardClick = async (id: number) => {
+  $: handleCardClick = async (id: number) => {
     if (!cards || !correctCard) {
       return
     }
