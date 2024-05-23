@@ -51,47 +51,63 @@ def guess_card():
     guessed_cards[0]["type"] = [card["type"] for card in guessed_cards]
     guessed_card = guessed_cards[0]
 
-    CATEGORIES_TO_COMPARE = ["rarity", "cmc"]
-
-    # Find the traits that the guessed and correct card share
-    matching_traits = {key: value for (key, value) in
-                       guessed_card.items() if correct_card[key] == value and key in CATEGORIES_TO_COMPARE}
-
-    # Find the traits that the guessed and correct card do not share
-    non_matching_traits = {key: value for (key, value) in
-                           guessed_card.items() if correct_card[key] != value and key in CATEGORIES_TO_COMPARE}
-
-    # Create the query for selecting the cards in the game with the shared traits
-    base_query = """
+    # Create the query and args for selecting the cards in the game with the shared traits
+    query = """
         SELECT DISTINCT cardid 
         FROM cards 
         NATURAL JOIN typecards 
         WHERE cardid = ANY(%s) 
         """
+    args = (card_ids,)
 
-    # Create the SQL conditionals for matching traits (positive filters)
-    positive_filter_conds = [f"AND {trait} = '{value}'" for trait,
-                             value in matching_traits.items()]
-    # Create the SQL conditionals for traits that do not match (negative filters)
-    negative_filter_conds = [f"AND NOT {trait} = '{value}'" for trait,
-                             value in non_matching_traits.items()]
+    # Initialize an object containing information about whether each trait was correctly guessed
+    guess = {}
 
-    # Find the types the card shares
-    common_types = [card for card in correct_card["type"]
-                    if card in guessed_card["type"]]
+    TRAITS_TO_COMPARE_ONE_TO_ONE = ["rarity", "cmc"]
+    TRAITS_TO_COMPARE_ONE_TO_MANY = ["type"]
 
-    # Calculate the SQL conditional for matching types
-    positive_filters_type = "AND type = ANY(%s)" if len(
-        common_types) > 0 else ""
+    # For each one-to-one trait, check if the trait was guessed correctly and add the filter to the query
+    for trait in TRAITS_TO_COMPARE_ONE_TO_ONE:
+        correct_value = correct_card[trait]
+        guessed_value = guessed_card[trait]
 
-    # Concatenate the conditionals with the base query
-    query = base_query + \
-        ' '.join(positive_filter_conds) + \
-        ' '.join(negative_filter_conds) + positive_filters_type
+        if correct_value == guessed_value:
+            query = query + f"AND {trait} = '{guessed_value}'"
+            guess[trait] = {
+                "correctValues": [guessed_value],
+                "incorrectValues": []
+            }
+        else:
+            query = query + f"AND NOT {trait} = '{guessed_value}'"
+            guess[trait] = {
+                "correctValues": [],
+                "incorrectValues": [guessed_value]
+            }
 
-    # Construct the args
-    common_types_tuple = (common_types,) if len(common_types) > 0 else ()
-    args = (card_ids, *common_types_tuple)
+    # For each one-to-many trait, check if the trait is contained in the correct traits and add appropriate filters
+    for trait in TRAITS_TO_COMPARE_ONE_TO_MANY:
+        # Find the trait values the cards share
+        common_values = [card for card in guessed_card[trait]
+                         if card in correct_card[trait]]
+
+        # Find the trait values the cards do not share
+        non_common_values = [card for card in guessed_card[trait]
+                             if card not in correct_card[trait]]
+
+        if len(common_values) > 0:
+            query = query + f"AND {trait} = ANY(%s)"
+            args = args + ((common_values,)
+                           if len(common_values) > 0 else ())
+
+        if len(non_common_values) > 0:
+            query = query + f"AND NOT {trait} = ANY(%s)"
+            args = args + ((non_common_values,)
+                           if len(non_common_values) > 0 else ())
+
+        guess[trait] = {
+            "correctValues": common_values,
+            "incorrectValues": non_common_values
+        }
 
     # Use a query that removes duplicates from the original query
     no_duplicate_query = f"SELECT cardid, name, imagesmall FROM ({query}) AS distinct_cards NATURAL JOIN cards"
@@ -102,7 +118,8 @@ def guess_card():
     DB.close()
 
     response = {
-        "cards": filtered_cards
+        "cards": filtered_cards,
+        "guess": guess
     }
 
     return json.dumps(response, default=str)
