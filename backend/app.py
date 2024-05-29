@@ -47,10 +47,14 @@ def guess_card():
         LEFT JOIN subtypecards ON cards.cardid = subtypecards.cardid
         LEFT JOIN supertypecards ON cards.cardid = supertypecards.cardid
         WHERE cards.cardid = %s""", (correct_card_id,))
-    correct_cards[0]["type"] = list(set([card["type"] for card in correct_cards]))
-    correct_cards[0]["supertype"] = list(set([card["supertype"] for card in correct_cards]))
-    correct_cards[0]["subtype"] = list(set([card["subtype"] for card in correct_cards]))
-    correct_cards[0]["keyword"] = list(set([card["keyword"] for card in correct_cards]))
+    correct_cards[0]["type"] = list(
+        set([card["type"] for card in correct_cards]))
+    correct_cards[0]["supertype"] = list(
+        set([card["supertype"] for card in correct_cards]))
+    correct_cards[0]["subtype"] = list(
+        set([card["subtype"] for card in correct_cards]))
+    correct_cards[0]["keyword"] = list(
+        set([card["keyword"] for card in correct_cards]))
     correct_card = correct_cards[0]
 
     # Fetch the guessed card from ID
@@ -61,32 +65,34 @@ def guess_card():
         LEFT JOIN subtypecards ON cards.cardid = subtypecards.cardid
         LEFT JOIN supertypecards ON cards.cardid = supertypecards.cardid
         WHERE cards.cardid = %s""", (guessed_card_id,))
-    guessed_cards[0]["type"] = list(set([card["type"] for card in guessed_cards]))
-    guessed_cards[0]["supertype"] = list(set([card["supertype"] for card in guessed_cards]))
-    guessed_cards[0]["subtype"] = list(set([card["subtype"] for card in guessed_cards]))
-
-    guessed_cards[0]["keyword"] = list(set([card["keyword"] for card in guessed_cards]))
+    guessed_cards[0]["type"] = list(
+        set([card["type"] for card in guessed_cards]))
+    guessed_cards[0]["supertype"] = list(
+        set([card["supertype"] for card in guessed_cards]))
+    guessed_cards[0]["subtype"] = list(
+        set([card["subtype"] for card in guessed_cards]))
+    guessed_cards[0]["keyword"] = list(
+        set([card["keyword"] for card in guessed_cards]))
     guessed_card = guessed_cards[0]
 
     # Create the query and args for selecting the cards in the game with the shared traits
     query = """
         SELECT DISTINCT cards.cardid 
-        FROM cards 
+        FROM cards
         LEFT JOIN typecards ON cards.cardid = typecards.cardid
         LEFT JOIN keywordcards ON cards.cardid = keywordcards.cardid
-        WHERE cards.cardid = ANY(%s) 
+        LEFT JOIN subtypecards ON cards.cardid = subtypecards.cardid
+        LEFT JOIN supertypecards ON cards.cardid = supertypecards.cardid
+        WHERE cards.cardid = ANY(%s)
         """
-    # LEFT JOIN supertypecards ON cards.cardid = supertypecards.cardid
-    #        LEFT JOIN keywordcards ON cards.cardid = keywordcards.cardid
-    #    LEFT JOIN subtypecards ON cards.cardid = subtypecards.cardid
-    
+
     args = (card_ids,)
 
     # Initialize an object containing information about whether each trait was correctly guessed
     guess = {}
 
     TRAITS_TO_COMPARE_ONE_TO_ONE = ["rarity", "cmc"]
-    TRAITS_TO_COMPARE_ONE_TO_MANY = ["keyword", "type"]#"subtype", "keyword"
+    TRAITS_TO_COMPARE_ONE_TO_MANY = ["supertype", "type", "subtype", "keyword"]
 
     # For each one-to-one trait, check if the trait was guessed correctly and add the filter to the query
     for trait in TRAITS_TO_COMPARE_ONE_TO_ONE:
@@ -94,12 +100,14 @@ def guess_card():
         guessed_value = guessed_card[trait]
 
         if correct_value == guessed_value:
+            # Do positive filtering if they share the same trait
             query = query + f"AND {trait} = '{guessed_value}'"
             guess[trait] = {
                 "correctValues": [guessed_value],
                 "incorrectValues": []
             }
         else:
+            # Do negative filtering if they don't share the same trait
             query = query + f"AND NOT {trait} = '{guessed_value}'"
             guess[trait] = {
                 "correctValues": [],
@@ -112,22 +120,25 @@ def guess_card():
         common_values = [elm for elm in guessed_card[trait]
                          if elm in correct_card[trait]]
 
-
         # Find the trait values the cards do not share
         non_common_values = [card for card in guessed_card[trait]
                              if card not in correct_card[trait]]
 
-
+        # Do positive filtering on common traits
         if len(common_values) > 0:
-            query = query + f"AND {trait} = ANY(%s)"
-            args = args + ((common_values,)
-                           if len(common_values) > 0 else ())
+            if common_values[0] == None:
+                query += f"AND {trait} IS NULL "
+            else:
+                query += f"AND {trait} = ANY(%s) "
+                args = args + ((common_values,))
 
+        # Do negative filtering on non-common traits
         if len(non_common_values) > 0:
-            query = query + f"AND NOT {trait} = ANY(%s)"
-            args = args + ((non_common_values,)
-                           if len(non_common_values) > 0 else ())
-        print(non_common_values)
+            if non_common_values[0] == None:
+                query += f"AND {trait} IS NOT NULL "
+            else:
+                query += f"AND NOT {trait} = ANY(%s) "
+                args = args + ((non_common_values,))
 
         guess[trait] = {
             "correctValues": common_values,

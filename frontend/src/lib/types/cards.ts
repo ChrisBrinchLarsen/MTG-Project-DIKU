@@ -17,11 +17,9 @@ export type Card = {
 
 export type PartialCard = Pick<Card, 'cardid' | 'name' | 'cmc' | 'imagesmall'>
 
-export const TRAITS_TO_GUESS = ['rarity', 'cmc', 'type'] as const
-
 export type Guess = {
-  [key in (typeof TRAITS_TO_GUESS)[number]]: {
-    correctValues: string[]
-    incorrectValues: string[]
+  [key in string]: {
+    correctValues: (string | null)[]
+    incorrectValues: (string | null)[]
   }
 }
