@@ -66,7 +66,7 @@ def parse_cards(file:str):
             rarity_      = get_trait("rarity"          ,line)
             layout_      = get_trait("layout"          ,line)
             artist_      = get_trait("artist"          ,line)
-            name_        = get_trait("name"            ,line)
+            name_        = get_trait("name"            ,line).replace("'", "''")
             layout_      = get_trait("layout"          ,line)
             
             # Types
