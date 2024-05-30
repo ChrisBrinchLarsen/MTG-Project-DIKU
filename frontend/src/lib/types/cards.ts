@@ -15,7 +15,7 @@ export type Card = {
   artist: string
 }
 
-export type PartialCard = Pick<Card, 'cardid' | 'name' | 'cmc' | 'imagesmall'>
+export type PartialCard = Pick<Card, 'cardid' | 'name' | 'cmc' | 'imagesmall' | 'imagenormal'>
 
 export type Guess = {
   [key in string]: {

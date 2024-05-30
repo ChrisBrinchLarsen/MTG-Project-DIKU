@@ -3,6 +3,7 @@
   import type { Guess, PartialCard } from '$lib/types/cards'
   import { initGame, guessCard } from '$lib/services/cards'
   import Guesses from '$lib/components/guesses/guesses.svelte'
+  import * as HoverCard from '$lib/components/ui/hover-card'
 
   let cards: PartialCard[] | undefined
   let correctCard: PartialCard | undefined
@@ -38,9 +39,16 @@
   <ul class="mt-8 grid grid-cols-5 gap-4">
     {#each sortedCards as card (card.cardid)}
       <li class="flex justify-center">
-        <button on:click={() => handleCardClick(card.cardid)}>
-          <img src={card.imagesmall} alt={card.name} />
-        </button>
+        <HoverCard.Root openDelay={700}>
+          <HoverCard.Trigger>
+            <button on:click={() => handleCardClick(card.cardid)}>
+              <img src={card.imagesmall} alt={card.name} class="rounded-md" />
+            </button>
+          </HoverCard.Trigger>
+          <HoverCard.Content>
+            <img src={card.imagenormal} alt={card.name} class="rounded-md" />
+          </HoverCard.Content>
+        </HoverCard.Root>
       </li>
     {/each}
   </ul>

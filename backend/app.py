@@ -13,11 +13,11 @@ def init_game():
 
     # Initialize a random card to be the correct card
     correct_card = DB.execute(
-        "SELECT cardid, name, cmc, imagesmall FROM cards ORDER BY RANDOM() LIMIT 1")[0]
+        "SELECT cardid, name, cmc, imagesmall, imagenormal FROM cards ORDER BY RANDOM() LIMIT 1")[0]
     correct_card_id = correct_card["cardid"]
 
     # Initialize additional random cards
-    cards = DB.execute("SELECT cardid, name, cmc, imagesmall FROM cards WHERE NOT cardid = %s ORDER BY RANDOM() LIMIT 999",
+    cards = DB.execute("SELECT cardid, name, cmc, imagesmall, imagenormal FROM cards WHERE NOT cardid = %s ORDER BY RANDOM() LIMIT 999",
                        (correct_card_id,))
 
     DB.close()
@@ -91,7 +91,7 @@ def guess_card():
     # Initialize an object containing information about whether each trait was correctly guessed
     guess = {}
 
-    TRAITS_TO_COMPARE_ONE_TO_ONE = ["rarity", "cmc"]
+    TRAITS_TO_COMPARE_ONE_TO_ONE = ["name", "rarity", "cmc"]
     TRAITS_TO_COMPARE_ONE_TO_MANY = ["supertype", "type", "subtype", "keyword"]
 
     # For each one-to-one trait, check if the trait was guessed correctly and add the filter to the query
@@ -146,7 +146,7 @@ def guess_card():
         }
 
     # Use a query that removes duplicates from the original query
-    no_duplicate_query = f"SELECT cardid, name, imagesmall FROM ({query}) AS distinct_cards NATURAL JOIN cards"
+    no_duplicate_query = f"SELECT cardid, name, imagesmall, imagenormal FROM ({query}) AS distinct_cards NATURAL JOIN cards"
 
     # Select the filtered cards
     filtered_cards = DB.execute(no_duplicate_query, args)
