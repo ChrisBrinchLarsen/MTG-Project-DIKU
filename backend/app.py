@@ -98,7 +98,7 @@ def guess_card():
     # Initialize an object containing information about whether each trait was correctly guessed
     guess = {}
 
-    TRAITS_TO_COMPARE_ONE_TO_ONE = ["name", "rarity", "cmc"]
+    TRAITS_TO_COMPARE_ONE_TO_ONE = ["name", "rarity", "cmc", "releasedate"]
     TRAITS_TO_COMPARE_ONE_TO_MANY = ["color", "supertype", "type", "subtype", "keyword"]
 
     # For each one-to-one trait, check if the trait was guessed correctly and add the filter to the query
