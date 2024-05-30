@@ -5,7 +5,3 @@ b:
 
 f:
 	cd frontend && npm run dev
-
-# start:
-# 	@cd backend && flask run --debug;
-# 	cd frontend && npm run dev
