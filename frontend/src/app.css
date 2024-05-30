@@ -75,4 +75,20 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  @font-face {
+		font-family: 'Beleren';
+		src: local('Beleren Bold'),
+			url('/fonts/beleren/beleren-bold.woff');
+		font-weight: bold;
+		font-display: swap;
+	}
+  @font-face {
+		font-family: 'Beleren';
+		src: local('Beleren Bold Italic'),
+			url('/fonts/beleren/beleren-bold.woff');
+		font-weight: bold;
+    font-style: italic;
+		font-display: swap;
+	}
 }
