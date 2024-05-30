@@ -46,11 +46,14 @@ def guess_card():
         LEFT JOIN keywordcards ON cards.cardid = keywordcards.cardid
         LEFT JOIN subtypecards ON cards.cardid = subtypecards.cardid
         LEFT JOIN supertypecards ON cards.cardid = supertypecards.cardid
+        LEFT JOIN colorcards ON cards.cardid = colorcards.cardid
         WHERE cards.cardid = %s""", (correct_card_id,))
     correct_cards[0]["type"] = list(
         set([card["type"] for card in correct_cards]))
     correct_cards[0]["supertype"] = list(
         set([card["supertype"] for card in correct_cards]))
+    correct_cards[0]["color"] = list(
+        set([card["color"] for card in correct_cards]))
     correct_cards[0]["subtype"] = list(
         set([card["subtype"] for card in correct_cards]))
     correct_cards[0]["keyword"] = list(
@@ -64,11 +67,14 @@ def guess_card():
         LEFT JOIN keywordcards ON cards.cardid = keywordcards.cardid
         LEFT JOIN subtypecards ON cards.cardid = subtypecards.cardid
         LEFT JOIN supertypecards ON cards.cardid = supertypecards.cardid
+        LEFT JOIN colorcards ON cards.cardid = colorcards.cardid
         WHERE cards.cardid = %s""", (guessed_card_id,))
     guessed_cards[0]["type"] = list(
         set([card["type"] for card in guessed_cards]))
     guessed_cards[0]["supertype"] = list(
         set([card["supertype"] for card in guessed_cards]))
+    guessed_cards[0]["color"] = list(
+        set([card["color"] for card in guessed_cards]))
     guessed_cards[0]["subtype"] = list(
         set([card["subtype"] for card in guessed_cards]))
     guessed_cards[0]["keyword"] = list(
@@ -83,6 +89,7 @@ def guess_card():
         LEFT JOIN keywordcards ON cards.cardid = keywordcards.cardid
         LEFT JOIN subtypecards ON cards.cardid = subtypecards.cardid
         LEFT JOIN supertypecards ON cards.cardid = supertypecards.cardid
+        LEFT JOIN colorcards ON cards.cardid = colorcards.cardid
         WHERE cards.cardid = ANY(%s)
         """
 
@@ -91,8 +98,8 @@ def guess_card():
     # Initialize an object containing information about whether each trait was correctly guessed
     guess = {}
 
-    TRAITS_TO_COMPARE_ONE_TO_ONE = ["name", "rarity", "cmc"]
-    TRAITS_TO_COMPARE_ONE_TO_MANY = ["supertype", "type", "subtype", "keyword"]
+    TRAITS_TO_COMPARE_ONE_TO_ONE = ["name", "rarity", "cmc", "releasedate"]
+    TRAITS_TO_COMPARE_ONE_TO_MANY = ["color", "supertype", "type", "subtype", "keyword"]
 
     # For each one-to-one trait, check if the trait was guessed correctly and add the filter to the query
     for trait in TRAITS_TO_COMPARE_ONE_TO_ONE:
