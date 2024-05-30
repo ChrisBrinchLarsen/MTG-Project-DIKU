@@ -32,12 +32,17 @@ def check_missing_data(card:dict) -> bool:
         if card[trait] == "":
             return True
     bad_layouts = {"split", "transform", "modal_dfc", "double_faced_token", "art_series", "adventure"}
+    bad_set_types = {"alchemy", "funny", "token", "memorabilia", "minigame", "box", "vanguard"}
+    bad_types = {"token", "emblem", "conspiracy"}
     if card["layout"] in bad_layouts: return True
+    if card["setType"] in bad_set_types: return True
+    for bad_type in bad_types:
+        if bad_type in card["types"]: return True
+    if "alchemy" in card["promoTypes"]: return True
     return False
 
 def parse_cards(file:str):
     print("\nParsing cards. This might take a moment...")
-
     cards = []
     with open("data/"+file, 'r', encoding='cp437') as file:
         lines = file.read().split('\n')
@@ -107,9 +112,7 @@ def parse_cards(file:str):
             colors_ = []
             colors_match = re.search(r'"colors":(\[.*?\]),', line)
             if colors_match != None:
-                colors_ = eval(colors_match.group(1))
-
-                
+                colors_ = eval(colors_match.group(1))                
 
             # Combined Mana
             combinedMana_         = 0
@@ -124,6 +127,12 @@ def parse_cards(file:str):
                 (year, month, day) = (int(dateMatch.group(1)), int(dateMatch.group(2)), int(dateMatch.group(3)))
                 releaseDate_       = dt.datetime(year, month, day)
             
+            # Promo types
+            promotypes_ = []
+            promotypes_match = colors_match = re.search(r'"promo_types":(\[.*?\]),', line)
+            if promotypes_match != None:
+                promotypes_ = eval(promotypes_match.group(1))
+
             card_attr = dict(
                 name         = name_,
                 releaseDate  = releaseDate_,
@@ -147,6 +156,7 @@ def parse_cards(file:str):
                 layout       = layout_,
                 artist       = artist_,
                 colors       = colors_,
+                promoTypes   = promotypes_
             )
             is_nad_card = check_missing_data(card_attr)
             if is_nad_card: continue  # This could be optimized so we early exit as soon as we receive a bad trait

@@ -152,7 +152,7 @@ def insertSubTypeCard(card, id):
 
 # Parse all cards from the dataset
 cards = parse_cards("rawCards.json")
-print("Uploading cards to database...")
+print("Uploading " + str(len(cards)) + " cards to database...")
 id = 0  # Manually tracking individual card ID's for cross referencing tables
 for card in cards:
     id += 1
