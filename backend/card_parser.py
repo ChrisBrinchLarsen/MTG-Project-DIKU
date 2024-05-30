@@ -112,7 +112,9 @@ def parse_cards(file:str):
             colors_ = []
             colors_match = re.search(r'"colors":(\[.*?\]),', line)
             if colors_match != None:
-                colors_ = eval(colors_match.group(1))                
+                colors_ = eval(colors_match.group(1))  
+            if len(colors_) == 0:
+                colors = ["C"]
 
             # Combined Mana
             combinedMana_         = 0
@@ -140,7 +142,7 @@ def parse_cards(file:str):
                 types        = types_,
                 subTypes     = subTypes_,
                 keywords    = keywords_,
-            #    exactMana    = exactMana_,
+            #   exactMana    = exactMana_,
                 combinedMana = combinedMana_,
                 oracleText   = oracleText_,
                 collectorID  = collectorID_,
