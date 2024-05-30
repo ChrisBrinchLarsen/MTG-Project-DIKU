@@ -34,21 +34,40 @@
 
     return className
   }
-  const getArrow = (
-    trait: string | null,
-    correctCard: PartialCard | undefined,
-    value: string | null
-  ) =>
-  {
+
+  const getArrow = (trait: string, correctCard: PartialCard | undefined, value: string | null) => {
     if (correctCard && value) {
-      if (trait == "cmc") {
+      if (trait == 'cmc') {
         if (correctCard.cmc > parseInt(value)) {
-          return '↑';
+          return '↑'
         }
         return '↓'
       }
     }
     return ''
+  }
+
+  const getValueLabel = (trait: string, value: string) => {
+    if (trait == 'color') {
+      switch (value) {
+        case 'G':
+          return 'Green'
+        case 'R':
+          return 'Red'
+        case 'U':
+          return 'Blue'
+        case 'B':
+          return 'Black'
+        case 'W':
+          return 'White'
+        case 'C':
+          return 'Colorless'
+        default:
+          return ''
+      }
+    }
+
+    return value
   }
 
   $: labels = guesses.length > 0 ? Object.keys(guesses[0]) : null
@@ -72,12 +91,13 @@
             >
               {#each values.correctValues as value}
                 <p class={getBoxStyle('correct', value, values)}>
-                  {value === null ? `No ${trait}` : value}
+                  {value === null ? `No ${trait}` : getValueLabel(trait, value)}
                 </p>
               {/each}
               {#each values.incorrectValues as value}
                 <p class={getBoxStyle('incorrect', value, values)}>
-                  {value === null ? `No ${trait}` : value} {getArrow(trait, value, correctCard)}
+                  {value === null ? `No ${trait}` : getValueLabel(trait, value)}
+                  {getArrow(trait, correctCard, value)}
                 </p>
               {/each}
             </div>

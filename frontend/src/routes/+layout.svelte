@@ -27,7 +27,7 @@
 <Navbar />
 
 <main class="container mx-auto max-w-4xl px-4 text-gray-200">
-  <div class="fixed left-0 top-0 -z-50 h-full w-full bg-black">
+  <div class="fixed left-0 top-0 -z-50 h-full w-full select-none bg-black">
     <img src={bg} alt="Background" class="h-full w-full object-cover brightness-50" />
   </div>
   <slot />
