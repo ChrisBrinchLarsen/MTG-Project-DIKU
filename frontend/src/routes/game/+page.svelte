@@ -35,7 +35,7 @@
 </script>
 
 {#if cards && correctCard}
-  <Guesses {guesses} />
+  <Guesses guesses={guesses} correctCard={correctCard} />
   <ul class="mt-8 grid grid-cols-5 gap-4">
     {#each sortedCards as card (card.cardid)}
       <li class="flex justify-center">

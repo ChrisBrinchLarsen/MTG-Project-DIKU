@@ -1,7 +1,8 @@
 <script lang="ts">
-  import type { Guess } from '$lib/types/cards'
+  import type { Guess, PartialCard } from '$lib/types/cards'
 
   export let guesses: Guess[]
+  export let correctCard: PartialCard | undefined
 
   const getBackgroundColor = ({ correctValues, incorrectValues }: Guess['type']) => {
     if (correctValues.length > 0 && incorrectValues.length > 0) {
@@ -33,6 +34,22 @@
 
     return className
   }
+  const getArrow = (
+    trait: string | null,
+    correctCard: PartialCard | undefined,
+    value: string | null
+  ) =>
+  {
+    if (correctCard && value) {
+      if (trait == "cmc") {
+        if (correctCard.cmc > parseInt(value)) {
+          return '↑';
+        }
+        return '↓'
+      }
+    }
+    return ''
+  }
 
   $: labels = guesses.length > 0 ? Object.keys(guesses[0]) : null
 </script>
@@ -60,7 +77,7 @@
               {/each}
               {#each values.incorrectValues as value}
                 <p class={getBoxStyle('incorrect', value, values)}>
-                  {value === null ? `No ${trait}` : value}
+                  {value === null ? `No ${trait}` : value} {getArrow(trait, value, correctCard)}
                 </p>
               {/each}
             </div>
