@@ -12,7 +12,10 @@ Remember to read the prerequisites in the frontend and backend folders before st
 
 ```bash
 # Running the frontend and the backend simultaneously
-make -j
+make
+
+# Same as above if you have to activate pipenv
+make z
 
 # Running the backend
 make b
