@@ -137,9 +137,11 @@ def guess_card():
             if non_common_values[0] == None:
                 query += f"AND {trait} IS NOT NULL "
             else:
+                trait_table_name = f"{trait}cards"
+
                 query += f"""AND cards.cardid NOT IN 
                     (SELECT cards.cardid FROM cards 
-                    LEFT JOIN {trait}cards ON cards.cardid = {trait}cards.cardid 
+                    LEFT JOIN {trait_table_name} ON cards.cardid = {trait_table_name}.cardid 
                     WHERE {trait} = ANY(%s))
                     """
 
