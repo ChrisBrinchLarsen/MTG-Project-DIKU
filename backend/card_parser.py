@@ -114,7 +114,7 @@ def parse_cards(file:str):
             if colors_match != None:
                 colors_ = eval(colors_match.group(1))  
             if len(colors_) == 0:
-                colors = ["C"]
+                colors_ = ["C"]
 
             # Combined Mana
             combinedMana_         = 0
