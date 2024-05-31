@@ -99,7 +99,8 @@ def guess_card():
     guess = {}
 
     TRAITS_TO_COMPARE_ONE_TO_ONE = ["name", "rarity", "cmc", "releasedate"]
-    TRAITS_TO_COMPARE_ONE_TO_MANY = ["color", "supertype", "type", "subtype", "keyword"]
+    TRAITS_TO_COMPARE_ONE_TO_MANY = [
+        "color", "supertype", "type", "subtype", "keyword"]
 
     # For each one-to-one trait, check if the trait was guessed correctly and add the filter to the query
     for trait in TRAITS_TO_COMPARE_ONE_TO_ONE:
@@ -173,6 +174,20 @@ def guess_card():
     }
 
     return json.dumps(response, default=str)
+
+
+@app.route('/get-card', methods=['POST'])
+def get_card():
+    DB.init()
+
+    body = request.get_json()
+    card_id = body["cardId"]
+
+    cards = DB.execute("SELECT * FROM cards WHERE cardid = %s", (card_id,))
+
+    DB.close()
+
+    return json.dumps(cards[0], default=str)
 
 
 if __name__ == '__main__':

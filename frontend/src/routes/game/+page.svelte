@@ -4,6 +4,7 @@
   import { initGame, guessCard } from '$lib/services/cards'
   import Guesses from '$lib/components/guesses/guesses.svelte'
   import * as HoverCard from '$lib/components/ui/hover-card'
+  import { goto } from '$app/navigation'
 
   let cards: PartialCard[] | undefined
   let correctCard: PartialCard | undefined
@@ -12,6 +13,10 @@
   $: handleCardClick = async (id: number) => {
     if (!cards || !correctCard) {
       return
+    }
+
+    if (id === correctCard.cardid) {
+      goto(`/game/won?cardId=${correctCard.cardid}&guesses=1`)
     }
 
     const data = await guessCard({
@@ -35,7 +40,7 @@
 </script>
 
 {#if cards && correctCard}
-  <Guesses guesses={guesses} correctCard={correctCard} />
+  <Guesses {guesses} {correctCard} />
   <ul class="mt-8 grid grid-cols-5 gap-4">
     {#each sortedCards as card (card.cardid)}
       <li class="flex justify-center">
