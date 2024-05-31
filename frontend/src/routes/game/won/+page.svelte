@@ -6,6 +6,8 @@
   import { getCard } from '$lib/services/cards'
   import type { Card } from '$lib/types/cards'
 
+  let card: Card | null = null
+
   const cardId = $page.url.searchParams.get('cardId')
   const guesses = $page.url.searchParams.get('guesses')
 
@@ -14,8 +16,6 @@
       goto('/game')
     }
   }
-
-  let card: Card | null = null
 
   onMount(async () => {
     if (!cardId) {
