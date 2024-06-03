@@ -1,8 +1,11 @@
 <script lang="ts">
   import type { Guess, PartialCard } from '$lib/types/cards'
+  import { Button } from '$lib/components/ui/button'
 
   export let guesses: Guess[]
   export let correctCard: PartialCard | undefined
+
+  let isShowingAllGuesses = false
 
   const getBackgroundColor = ({ correctValues, incorrectValues }: Guess['type']) => {
     if (correctValues.length > 0 && incorrectValues.length > 0) {
@@ -10,7 +13,7 @@
     } else if (correctValues.length > 0 && incorrectValues.length === 0) {
       return 'bg-green-500'
     } else {
-      return 'bg-red-500'
+      return 'bg-red-600'
     }
   }
 
@@ -81,11 +84,11 @@
       {/each}
     </div>
     <ul class="mt-2 flex flex-col gap-4">
-      {#each guesses as guess}
+      {#each guesses.slice(0, isShowingAllGuesses ? guesses.length : 3) as guess}
         <li class="flex gap-4">
           {#each Object.entries(guess) as [trait, values]}
             <div
-              class="flex h-16 w-24 flex-col items-center justify-center gap-1 p-2 text-center text-xs font-bold capitalize {getBackgroundColor(
+              class="flex h-16 w-24 flex-col items-center justify-center gap-1 rounded p-2 text-center text-xs font-bold capitalize {getBackgroundColor(
                 values
               )}"
             >
@@ -105,5 +108,18 @@
         </li>
       {/each}
     </ul>
+    {#if guesses.length > 3}
+      <Button
+        variant="link"
+        class="mt-4 text-white"
+        on:click={() => (isShowingAllGuesses = !isShowingAllGuesses)}
+      >
+        {#if isShowingAllGuesses}
+          Hide guesses ↑
+        {:else}
+          Show all guesses ↓
+        {/if}
+      </Button>
+    {/if}
   </div>
 {/if}
