@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { goto } from '$app/navigation'
   import type { Guess, PartialCard } from '$lib/types/cards'
   import { initGame, guessCard } from '$lib/services/cards'
-  import Guesses from '$lib/components/guesses/guesses.svelte'
-  import * as HoverCard from '$lib/components/ui/hover-card'
-  import { goto } from '$app/navigation'
+  import { Guesses } from '$lib/components/guesses'
+  import { Cards } from '$lib/components/cards'
 
   let cards: PartialCard[] | undefined
   let correctCard: PartialCard | undefined
@@ -34,29 +34,11 @@
     cards = data.cards
     correctCard = data.correctCard
   })
-
-  $: sortedCards =
-    cards && correctCard ? [...cards, correctCard].sort((a, b) => a.cardid - b.cardid) : []
 </script>
 
 {#if cards && correctCard}
   <Guesses {guesses} {correctCard} />
-  <ul class="mt-8 grid grid-cols-5 gap-4">
-    {#each sortedCards as card (card.cardid)}
-      <li class="flex justify-center">
-        <HoverCard.Root openDelay={700}>
-          <HoverCard.Trigger>
-            <button on:click={() => handleCardClick(card.cardid)}>
-              <img src={card.imagesmall} alt={card.name} class="rounded-md" />
-            </button>
-          </HoverCard.Trigger>
-          <HoverCard.Content>
-            <img src={card.imagenormal} alt={card.name} class="rounded-md" />
-          </HoverCard.Content>
-        </HoverCard.Root>
-      </li>
-    {/each}
-  </ul>
+  <Cards cards={[...cards, correctCard]} on:cardClick={(e) => handleCardClick(e.detail)} />
 {:else}
   Initializing game...
 {/if}
