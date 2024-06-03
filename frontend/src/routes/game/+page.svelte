@@ -16,7 +16,7 @@
     }
 
     if (id === correctCard.cardid) {
-      goto(`/game/won?cardId=${correctCard.cardid}&guesses=1`)
+      goto(`/game/won?cardId=${correctCard.cardid}&guesses=${guesses.length + 1}`)
     }
 
     const data = await guessCard({

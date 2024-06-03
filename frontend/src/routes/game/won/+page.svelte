@@ -4,6 +4,7 @@
   import { page } from '$app/stores'
   import { browser } from '$app/environment'
   import { getCard } from '$lib/services/cards'
+  import { Button } from '$lib/components/ui/button'
   import type { Card } from '$lib/types/cards'
 
   let card: Card | null = null
@@ -27,7 +28,8 @@
 </script>
 
 <div class="flex flex-col items-center">
-  <p class="text-lg">You guessed it!</p>
+  <p class="text-lg">You guessed the card in {guesses} guess(es)!</p>
   <h3 class="mt-8 text-3xl">{card?.name}</h3>
   <img src={card?.imagelarge} alt={card?.name} class="mt-4 w-96 rounded-xl" />
+  <Button href="/game" class="mt-8 text-xl" size="lg">Play again</Button>
 </div>

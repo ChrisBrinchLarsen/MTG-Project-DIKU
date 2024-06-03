@@ -6,6 +6,8 @@ Frontend SvelteKit project for MTG project.
 
 [SvelteKit docs](https://kit.svelte.dev/docs/introduction) (the framework).
 
+[Shadcn-svelte docs](https://www.shadcn-svelte.com/docs) (component library).
+
 ## Developing
 
 Make sure to have [Node](https://nodejs.org/en) installed.
