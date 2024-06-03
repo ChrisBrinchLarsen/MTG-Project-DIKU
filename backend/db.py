@@ -24,7 +24,10 @@ class DB:
     @staticmethod
     def execute(query: str, vars=None):
         DB.cur.execute(query, vars)
-        return [dict(row) for row in DB.cur.fetchall()]
+        if DB.cur.pgresult_ptr is not None:
+            return [dict(row) for row in DB.cur.fetchall()]
+        else:
+            return []
 
     @staticmethod
     def close():
