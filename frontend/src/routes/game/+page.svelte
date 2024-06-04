@@ -26,7 +26,6 @@
     })
 
     cards = data.cards
-    // TODO: shuffle the cards, otherwise the last card is always the correct one
     guesses = [data.guess, ...guesses]
   }
 
@@ -39,7 +38,10 @@
 
 {#if cards && correctCard}
   <Guesses {guesses} {correctCard} />
-  <Cards cards={[...cards, correctCard]} on:cardClick={(e) => handleCardClick(e.detail)} />
+  <Cards
+    cards={[...cards, correctCard].sort((a, b) => a.cardid - b.cardid)}
+    on:cardClick={(e) => handleCardClick(e.detail)}
+  />
 {:else}
   Initializing game...
 {/if}
