@@ -19,23 +19,15 @@
 
   const getBoxStyle = (
     style: 'correct' | 'incorrect',
-    value: string | null,
     values: {
       correctValues: (string | null)[]
       incorrectValues: (string | null)[]
     }
   ) => {
-    let className = ''
-
     if (values.correctValues.length > 0 && values.incorrectValues.length > 0) {
-      className += style === 'correct' ? 'text-green-800' : 'text-red-800'
+      return style === 'correct' ? 'text-green-800' : 'text-red-800'
     }
-
-    if (value === null) {
-      className += 'italic'
-    }
-
-    return className
+    return ''
   }
 
   const getArrow = (trait: string, correctCard: PartialCard | undefined, value: string | null) => {
@@ -93,12 +85,12 @@
               )}"
             >
               {#each values.correctValues as value}
-                <p class={getBoxStyle('correct', value, values)}>
+                <p class={getBoxStyle('correct', values)}>
                   {value === null ? `No ${trait}` : getValueLabel(trait, value)}
                 </p>
               {/each}
               {#each values.incorrectValues as value}
-                <p class={getBoxStyle('incorrect', value, values)}>
+                <p class={getBoxStyle('incorrect', values)}>
                   {value === null ? `No ${trait}` : getValueLabel(trait, value)}
                   {getArrow(trait, correctCard, value)}
                 </p>
