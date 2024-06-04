@@ -112,14 +112,16 @@ def guess_card():
             query = query + f"AND {trait} = '{guessed_value}'"
             guess[trait] = {
                 "correctValues": [guessed_value],
-                "incorrectValues": []
+                "incorrectValues": [],
+                "status": "correct"
             }
         else:
             # Do negative filtering if they don't share the same trait
             query = query + f"AND NOT {trait} = '{guessed_value}'"
             guess[trait] = {
                 "correctValues": [],
-                "incorrectValues": [guessed_value]
+                "incorrectValues": [guessed_value],
+                "status": "incorrect"
             }
 
     # For each one-to-many trait, check if the trait is contained in the correct traits and add appropriate filters
@@ -131,9 +133,18 @@ def guess_card():
         # Find the trait values the cards do not share
         non_common_values = [card for card in guessed_card[trait]
                              if card not in correct_card[trait]]
-        
-        # Check if the common values for this trait encompasses ALL values of this trait on the correct card. 
-        partialOrNot = "correct" if len(common_values) == len(correct_card[trait]) else "partial"
+
+        # Initializing the guess status
+        status = "incorrect"
+        # If one or more common values were guessed but the card also had non-common values
+        if ((len(common_values) > 0 and len(non_common_values) > 0)):
+            status = "partial"
+        # If one or more common values were guessed but not all
+        elif len(common_values) >= 1 and len(common_values) < len(correct_card[trait]):
+            status = "partial"
+        # If the common values for this trait encompasses ALL values of this trait on the correct card
+        elif len(common_values) == len(correct_card[trait]):
+            status = "correct"
 
         # Do positive filtering on common traits
         if len(common_values) > 0:
@@ -161,7 +172,7 @@ def guess_card():
         guess[trait] = {
             "correctValues": common_values,
             "incorrectValues": non_common_values,
-            "status": partialOrNot
+            "status": status
         }
 
     # Use a query that removes duplicates from the original query

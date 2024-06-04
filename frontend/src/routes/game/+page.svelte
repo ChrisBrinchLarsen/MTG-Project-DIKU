@@ -26,6 +26,7 @@
     })
 
     cards = data.cards
+    // TODO: shuffle the cards, otherwise the last card is always the correct one
     guesses = [data.guess, ...guesses]
   }
 

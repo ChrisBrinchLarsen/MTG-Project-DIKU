@@ -7,10 +7,10 @@
 
   let isShowingAllGuesses = false
 
-  const getBackgroundColor = ({ correctValues, incorrectValues, status }: Guess['type']) => {
-    if (correctValues.length > 0 && incorrectValues.length > 0 || status == "partial") {
+  const getBackgroundColor = (status: Guess['type']['status']) => {
+    if (status === 'partial') {
       return 'bg-orange-500'
-    } else if (correctValues.length > 0 && incorrectValues.length === 0) {
+    } else if (status === 'correct') {
       return 'bg-green-500'
     } else {
       return 'bg-red-600'
@@ -89,7 +89,7 @@
           {#each Object.entries(guess) as [trait, values]}
             <div
               class="flex h-16 w-24 flex-col items-center justify-center gap-1 rounded p-2 text-center text-xs font-bold capitalize {getBackgroundColor(
-                values
+                values.status
               )}"
             >
               {#each values.correctValues as value}
