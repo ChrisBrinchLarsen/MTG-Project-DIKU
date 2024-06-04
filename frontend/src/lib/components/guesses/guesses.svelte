@@ -7,8 +7,8 @@
 
   let isShowingAllGuesses = false
 
-  const getBackgroundColor = ({ correctValues, incorrectValues }: Guess['type']) => {
-    if (correctValues.length > 0 && incorrectValues.length > 0) {
+  const getBackgroundColor = ({ correctValues, incorrectValues, status }: Guess['type']) => {
+    if (correctValues.length > 0 && incorrectValues.length > 0 || status == "partial") {
       return 'bg-orange-500'
     } else if (correctValues.length > 0 && incorrectValues.length === 0) {
       return 'bg-green-500'

@@ -131,6 +131,9 @@ def guess_card():
         # Find the trait values the cards do not share
         non_common_values = [card for card in guessed_card[trait]
                              if card not in correct_card[trait]]
+        
+        # Check if the common values for this trait encompasses ALL values of this trait on the correct card. 
+        partialOrNot = "correct" if len(common_values) == len(correct_card[trait]) else "partial"
 
         # Do positive filtering on common traits
         if len(common_values) > 0:
@@ -157,7 +160,8 @@ def guess_card():
 
         guess[trait] = {
             "correctValues": common_values,
-            "incorrectValues": non_common_values
+            "incorrectValues": non_common_values,
+            "status": partialOrNot
         }
 
     # Use a query that removes duplicates from the original query

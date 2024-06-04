@@ -21,5 +21,6 @@ export type Guess = {
   [key in string]: {
     correctValues: (string | null)[]
     incorrectValues: (string | null)[]
+    status: (string | null)
   }
 }
