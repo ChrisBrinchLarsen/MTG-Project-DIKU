@@ -3,10 +3,11 @@
 Project for the course Databases and Information systems at UCPH.
 
 ### Table of Contents
+
 1. [Description](#description)
 2. [Setup](#setup)
-    1. [Setting up the backend](#setting-up-the-backend)
-    2. [Setting up the frontend](#setting-up-the-frontend)
+   1. [Setting up the backend](#setting-up-the-backend)
+   2. [Setting up the frontend](#setting-up-the-frontend)
 3. [Running the backend and frontend simultaneously](#running-the-backend-and-frontend-simultaneously)
 4. [Useful links to docs](#useful-links-to-docs)
 
@@ -84,7 +85,7 @@ pipenv shell
 flask run
 ```
 
-You're now ready to setup the frontend.
+If you encounter missing package errors, try installing the missing package with `pip install [package-name]`. Otherwise, you're now ready to setup the frontend.
 
 #### Setting up the frontend
 
@@ -115,7 +116,6 @@ npm run dev -- --open
 
 That's all the setup there is. To run the fully functioning project, run the frontend and backend at the same time and navigate to [localhost:5173](http://localhost:5173/). You can use the commands detailed below for a quick way to run them simultaneously.
 
-
 ### Running the backend and frontend simultaneously
 
 We have provided a few make commands to run both the frontend and the backend at the same time, as shown below.
@@ -136,8 +136,22 @@ make b
 make f
 ```
 
-Open a browser and navigate to [localhost:5173](http://localhost:5173/) to open the frontend.
+If you cannot use `make`, just run the frontend and backend seperately:
 
+```bash
+# In terminal 1
+cd backend
+pipenv shell
+flask run --debug
+```
+
+```bash
+# In terminal 2
+cd frontend
+npm run dev
+```
+
+Open a browser and navigate to [localhost:5173](http://localhost:5173/) to open the frontend and try the game. Have fun!
 
 ### Useful links to docs
 
