@@ -7,7 +7,7 @@ Project for the course Databases and Information systems at UCPH.
 2. [Setup](#setup)
     1. [Setting up the backend](#setting-up-the-backend)
     2. [Setting up the frontend](#setting-up-the-frontend)
-3. [Running the backend and frontend-simultaneously](#running-the-backend-and-frontend-simultaneously)
+3. [Running the backend and frontend simultaneously](#running-the-backend-and-frontend-simultaneously)
 4. [Useful links to docs](#useful-links-to-docs)
 
 ### Description
