@@ -136,7 +136,7 @@ make b
 make f
 ```
 
-Open a browser and navigate to [localhost:5173](http://localhost:5173/) to see frontend.
+Open a browser and navigate to [localhost:5173](http://localhost:5173/) to open the frontend.
 
 
 ### Useful links to docs
