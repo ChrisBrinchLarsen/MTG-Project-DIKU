@@ -13,7 +13,9 @@ Project for the course Databases and Information systems at UCPH.
 
 ### Description
 
-Magic the Gathering'dle is a Wordle-inspired game where the goal is to guess a card from a subset of the ~30,000 cards. In short, you press a card and the game filters out other cards according to the traits of the guessed and correct card. Read the setup below to get started.
+Magic the Gathering'dle is a Wordle-inspired game where the goal is to guess a card from a subset of the ~30,000 cards. In short, you press a card and the game filters out other cards according to the traits of the guessed and correct card. The goal is to guess the correct card in as few guesses (clicks) as possible. It challenges players to strategically pick what categories of traits that filter out most cards at a time to minimize the number of guesses.
+
+Read the setup below to get started.
 
 ### Setup
 
@@ -159,8 +161,8 @@ Below is a list of links to documentation of the technologies we use.
 
 [Flask](https://flask.palletsprojects.com/en/3.0.x/) (backend framework).
 
-[Svelte](https://svelte.dev/docs/introduction) (the library).
+[Svelte](https://svelte.dev/docs/introduction) (frontend library).
 
-[SvelteKit](https://kit.svelte.dev/docs/introduction) (the framework).
+[SvelteKit](https://kit.svelte.dev/docs/introduction) (frontend framework).
 
 [Shadcn-svelte](https://www.shadcn-svelte.com/docs) (component library).
