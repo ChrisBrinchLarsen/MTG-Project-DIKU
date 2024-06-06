@@ -15,6 +15,8 @@ Project for the course Databases and Information systems at UCPH.
 
 Magic the Gathering'dle is a Wordle-inspired game where the goal is to guess a card from a subset of the ~30,000 cards. In short, you press a card and the game filters out other cards according to the traits of the guessed and correct card. The goal is to guess the correct card in as few guesses (clicks) as possible. It challenges players to strategically pick what categories of traits that filter out most cards at a time to minimize the number of guesses.
 
+SQL expressions are used in the endpoint handlers in `app.py` and regular expressions are used in `card_parser.py` in the backend.
+
 Read the setup below to get started.
 
 ### ER-diagram
