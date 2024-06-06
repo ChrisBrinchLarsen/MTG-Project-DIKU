@@ -17,6 +17,12 @@ Magic the Gathering'dle is a Wordle-inspired game where the goal is to guess a c
 
 Read the setup below to get started.
 
+### ER-diagram
+
+The E/R diagram of the database structure is shown below. Note that there are some slight deviations from the names defined in the columns in the SQL tables.
+
+![ER-diagram](./er-diagram.png)
+
 ### Setup
 
 #### Setting up the backend
